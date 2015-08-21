@@ -9,7 +9,8 @@ class UserController extends \BaseController {
 	 */
 	public function index()
 	{
-		//
+		$users = User::paginate(5);
+		return View::make("users.index", compact('users'));
 	}
 
 
@@ -20,7 +21,7 @@ class UserController extends \BaseController {
 	 */
 	public function create()
 	{
-		//
+		return View::make('users.create');
 	}
 
 
@@ -30,9 +31,22 @@ class UserController extends \BaseController {
 	 * @return Response
 	 */
 	public function store()
-	{
-		//
-	}
+    {
+        $input = Input::all();
+        $validation = Validator::make($input, User::$rules);
+
+        if ($validation->passes())
+        {
+            User::create($input);
+
+            return Redirect::route('users.index');
+        }
+
+        return Redirect::route('users.create')
+            ->withInput()
+            ->withErrors($validation)
+            ->with('message', 'There were validation errors.');
+    }
 
 
 	/**
@@ -55,7 +69,13 @@ class UserController extends \BaseController {
 	 */
 	public function edit($id)
 	{
-		//
+		$user = User::find($id);
+        if (is_null($user))
+        {
+            return Redirect::route('users.index');
+        }
+
+        return View::make('users.edit', compact('user'));
 	}
 
 
@@ -67,7 +87,19 @@ class UserController extends \BaseController {
 	 */
 	public function update($id)
 	{
-		//
+		$input = Input::all();
+        $validation = Validator::make($input, User::$rules);
+        if ($validation->passes())
+        {
+            $user = User::find($id);
+            $user->update($input);
+            return Redirect::route('users.show', $id);
+        }
+
+		return Redirect::route('users.edit', $id)
+            ->withInput()
+            ->withErrors($validation)
+            ->with('message', 'There were validation errors.');
 	}
 
 
@@ -79,7 +111,8 @@ class UserController extends \BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+		User::find($id)->delete();
+        return Redirect::route('users.index');
 	}
 
 

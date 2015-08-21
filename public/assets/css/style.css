@@ -1,0 +1,9 @@
+ul.pagination {
+	list-style: none;
+}
+	ul.pagination li {
+		float: left;
+	}
+		ul.pagination li a {
+			padding: 5px;
+		}
